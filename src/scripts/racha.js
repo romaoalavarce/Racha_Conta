@@ -1,5 +1,9 @@
 import fs from 'node:fs';
 import pc from 'picocolors';
+import { paraCentavos, calcularGorjeta, formatarReais, lerValor } from '../regras/conta.js';
+
+
+
 
 const texto = fs.readFileSync('src/data/conta.json', 'utf-8');
 const conta = JSON.parse(texto);
@@ -9,8 +13,12 @@ const subtotal = conta.itens.reduce((total, item) => total + item.preco * item.q
 const QuantSoma = conta.itens.reduce((total, item) => total + item.quantidade, 0);
 const filtro = conta.itens.filter((item) => item.preco > 50);
 
-const subtotalCentavos = Math.round(subtotal * 100);
-const gorjetaCentavos = Math.round(subtotalCentavos * conta.gorjeta / 100);
+let subtotalCentavos = paraCentavos(subtotal);
+if (process.argv[2]) {
+  subtotalCentavos = lerValor(process.argv[2]);
+}
+
+const gorjetaCentavos = calcularGorjeta(subtotalCentavos, conta.gorjeta);
 const totalCentavos = subtotalCentavos + gorjetaCentavos;
 
 
